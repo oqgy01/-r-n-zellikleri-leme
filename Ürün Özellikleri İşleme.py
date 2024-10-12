@@ -163,17 +163,19 @@ password_input = driver.find_element("id", "Password")
 password_input.send_keys("123456")
 password_input.send_keys(Keys.RETURN)
 
+#region Excelle Ürün Yükleme Alanı
 desired_url = "https://task.haydigiy.com/admin/importproductxls/edit/24"
 driver.get(desired_url)
 
 # Yükle Butonunu Bul
 file_input = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[name="qqfile"]')))
 
-# CalismaAlani Excelini Bul
-file_path = "C:/Users/Kerem/Desktop/Ürün Özellikleri Yükleme/Ürün Özellikleri.xlsx"
+# CalismaAlani Excel dosyasının mevcut çalışma dizininde olduğunu varsay
+file_path = os.path.join(os.getcwd(), "Ürün Özellikleri.xlsx")
 
 # Dosyayı seç
 file_input.send_keys(file_path)
+
 
 # "İşlemler" düğmesine tıkla
 operations_button = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'btn-success')))
@@ -195,12 +197,11 @@ def wait_for_element_and_click(driver, by, value, timeout=10):
         print(f"Hata: {e}")
         return False
 
-def wait_for_page_load(driver, timeout=30):
-    try:
-        WebDriverWait(driver, timeout).until(
-            lambda d: d.execute_script('return document.readyState') == 'complete')
-    except TimeoutException:
-        print("Sayfa yüklenirken zaman aşımı.")
+def wait_for_page_load(driver):
+    while True:
+        if driver.title:  # Tarayıcı başlığı varsa, sayfa yüklenmiş demektir
+            break
+        time.sleep(2)
 
 # "Evet" butonunu tıkla
 if wait_for_element_and_click(driver, By.ID, 'import-product-xls-execute'):
